@@ -1,0 +1,24 @@
+{
+  "name": "iuno-extension",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=esm --minify --sourcemap --platform=browser",
+    "dev": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=esm --sourcemap --platform=browser --watch",
+    "test": "bun test/run.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "@types/cheerio": "^1.0.0",
+    "@types/node": "^25.5.2",
+    "axios": "^1.14.0",
+    "cheerio": "^1.2.0",
+    "esbuild": "^0.28.0"
+  }
+}
