@@ -6,7 +6,8 @@
   "scripts": {
     "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=esm --minify --sourcemap --platform=browser",
     "dev": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=esm --sourcemap --platform=browser --watch",
-    "test": "bun test/run.ts"
+    "test": "bun test/run.ts",
+    "deploy": "npm run build && cd dist && git init && git add . && git commit -m 'Update extension' && git remote add origin https://github.com/YOUR_USERNAME/YOUR_PUBLIC_REPO.git && git push -f origin main"
   },
   "devDependencies": {
     "@types/bun": "latest"
