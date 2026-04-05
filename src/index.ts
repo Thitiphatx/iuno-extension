@@ -18,8 +18,9 @@ export class AnimeRukaExtension implements IExtension {
   name = "Animeruka";
   icon = "https://example.com/favicon.ico";
   baseUrl = "https://animeruka.com";
+  referer = "https://animemami.xyz"
   headers = {
-    "User-Agent":
+    "Ext-User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
     "Ext-Referer": this.baseUrl,
     "Ext-Origin": this.baseUrl,

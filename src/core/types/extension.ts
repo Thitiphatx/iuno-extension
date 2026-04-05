@@ -6,6 +6,7 @@ export interface IExtension {
     name: string
     icon: string
     baseUrl: string
+    referer?: string
     headers?: Record<string, string>
     getLatest(page?: number): Promise<IPage<IAnimeItem>>
     getSearchResult(keyword: string, page?: number): Promise<IPage<IAnimeItem>>
