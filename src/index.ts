@@ -16,7 +16,7 @@ import { parseApiUrl, parseVideoSource } from "./parser/parseVideoSource";
 export class AnimeRukaExtension implements IExtension {
   id = "animeruka";
   name = "Animeruka";
-  icon = "https://example.com/favicon.ico";
+  icon = "https://animeruka.com/wp-content/uploads/2024/07/cropped-32bc1bc65f31e82e2f89eb399f4c93e8-1-192x192.png";
   baseUrl = "https://animeruka.com";
   referer = "https://animemami.xyz"
   headers = {
