@@ -1,7 +1,9 @@
 import type * as cheerio from "cheerio";
 import type { IEpisode, IGroupEpisode } from "../core/types/anime";
 
-export async function parseEpisodes($: cheerio.CheerioAPI): Promise<IGroupEpisode[]> {
+export async function parseEpisodes(
+  $: cheerio.CheerioAPI,
+): Promise<IGroupEpisode[]> {
   const groups: IGroupEpisode[] = [];
 
   $("#seasons .se-c").each((i, el) => {
@@ -12,7 +14,7 @@ export async function parseEpisodes($: cheerio.CheerioAPI): Promise<IGroupEpisod
       .find(".se-a ul.episodios li")
       .each((indexEp, elementEp) => {
         const epNum =
-          $(elementEp).find(".numerando").text().replace("ตอนที่", "").trim() ??
+          $(elementEp).find(".numerando").text().split("-")[1]?.trim() ??
           undefined;
         const url = $(elementEp).find(".episodiotitle a").attr("href") ?? "";
         episodes.push({
@@ -21,11 +23,12 @@ export async function parseEpisodes($: cheerio.CheerioAPI): Promise<IGroupEpisod
         });
       });
 
+    console.log(episodes);
     groups.push({
       title,
       episodes,
     });
   });
-  
+
   return groups;
 }

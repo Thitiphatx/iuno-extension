@@ -1,18 +1,25 @@
 import type * as cheerio from "cheerio";
 
-export function parseApiUrl($: cheerio.CheerioAPI): string {
-  const opt = $(".dooplay_player_option").first();
-  if (!opt.length) throw new Error("No player found");
+export function extractIframeSrc(html: string): string | undefined {
+  const match = html.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+  return match ? match[1] : undefined;
+}
 
-  const post = opt.attr("data-post");
-  const type = opt.attr("data-type");
-  const nume = opt.attr("data-nume");
-
-  if (!post || !type || !nume) {
-    throw new Error("Required player data-attributes not found");
+export function extractListServer(html: string): any[] {
+  const match = html.match(/list_server\s*:\s*(\[[^]*?\])/);
+  if (!match) return [];
+  try {
+    // Basic attempt to fix unquoted keys if necessary, 
+    // but usually these are already valid JSON strings in the script
+    return JSON.parse(match[1]!!);
+  } catch (e) {
+    return [];
   }
+}
 
-  return `${post}/${type}/${nume}`;
+export function extractSources(html: string): string | undefined {
+  const match = html.match(/["']file["']\s*:\s*["']([^"']+)["']/);
+  return match ? match[1] : undefined;
 }
 
 export function parseVideoSource($: cheerio.CheerioAPI): string {

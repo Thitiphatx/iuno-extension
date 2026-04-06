@@ -2,28 +2,37 @@ import axios, { type AxiosInstance } from "axios";
 import * as cheerio from "cheerio";
 import type { IPage } from "./core/types";
 import type {
-  IAnimeItem,
   IAnimeDetail,
+  IAnimeItem,
   IGroupEpisode,
 } from "./core/types/anime";
 import type { IExtension } from "./core/types/extension";
-import { parseLatest } from "./parser/parseLatest";
-import { parseSearchResult } from "./parser/parseSearchResult";
 import { parseDetail } from "./parser/parseDetail";
 import { parseEpisodes } from "./parser/parseEpisodes";
-import { parseApiUrl, parseVideoSource } from "./parser/parseVideoSource";
+import { parseLatest } from "./parser/parseLatest";
+import {
+  extractIframeSrc,
+  extractListServer,
+  extractSources,
+} from "./parser/parseVideoSource";
 
-export class AnimeRukaExtension implements IExtension {
-  id = "animeruka";
-  name = "Animeruka";
-  icon = "https://example.com/favicon.ico";
-  baseUrl = "https://animeruka.com";
-  referer = "https://animemami.xyz"
+export class AnimeWakuExtension implements IExtension {
+  id = "animewaku";
+  name = "Animewaku";
+  icon =
+    "https://www.animewaku.com/wp-content/uploads/2024/02/cropped-Favicon-192x192.png";
+  baseUrl = "https://www.animewaku.com";
+  referer = "https://private-okru.doodee-player.com";
   headers = {
-    "Ext-User-Agent":
+    "user-agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    "Ext-Referer": this.baseUrl,
-    "Ext-Origin": this.baseUrl,
+    "referer": this.baseUrl,
+    "origin": this.baseUrl,
+    Accept:
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "Accept-Language": "en-US,en;q=0.9,th;q=0.8",
+    "Cache-Control": "max-age=0",
+    "Upgrade-Insecure-Requests": "1",
   };
 
   private get client(): AxiosInstance {
@@ -38,18 +47,57 @@ export class AnimeRukaExtension implements IExtension {
       `${this.baseUrl}/anime/page/${page}`,
     );
     const $ = cheerio.load(response.data);
-    return await parseLatest($, page);
+    return parseLatest($, page);
+  }
+
+  private async getNonce(): Promise<string> {
+    const response = await this.client.get(this.baseUrl);
+    const nonceMatch = response.data.match(/"nonce":"([a-zA-Z0-9]+)"/);
+    if (!nonceMatch) {
+      // Try another common pattern for dooplay nonces
+      const altMatch = response.data.match(/nonce\s*[:=]\s*"([a-zA-Z0-9]+)"/);
+      if (!altMatch) {
+        throw new Error("Nonce not found in homepage");
+      }
+      return altMatch[1];
+    }
+    return nonceMatch[1];
   }
 
   async getSearchResult(
     keyword: string,
     page: number = 1,
   ): Promise<IPage<IAnimeItem>> {
+    const nonce = await this.getNonce();
     const response = await this.client.get(
-      `${this.baseUrl}/page/${page}/?s=${encodeURI(keyword.trim())}`,
+      `${this.baseUrl}/wp-json/dooplay/search/`,
+      {
+        params: {
+          keyword: keyword.trim(),
+          nonce: nonce,
+        },
+      },
     );
-    const $ = cheerio.load(response.data);
-    return await parseSearchResult($, page);
+
+    const items: IAnimeItem[] = [];
+    if (response.data && typeof response.data === "object") {
+      Object.values(response.data).forEach((item: any) => {
+        if (item.title && item.url) {
+          items.push({
+            title: item.title,
+            url: item.url,
+            cover: item.img || "",
+          });
+        }
+      });
+    }
+
+    return {
+      content: items,
+      page: page,
+      minPage: 1,
+      maxPage: 1, // API usually returns all results at once
+    };
   }
 
   async getDetail(url: string): Promise<IAnimeDetail> {
@@ -66,23 +114,66 @@ export class AnimeRukaExtension implements IExtension {
 
   async getVideoSource(url: string): Promise<string> {
     const response = await this.client.get(url);
-    const $ = cheerio.load(response.data);
-    const apiPath = parseApiUrl($);
+    const postId = url.split("/").filter(Boolean).pop() || "";
 
-    const apiResponse = await this.client.get(
-      `${this.baseUrl}/wp-json/dooplayer/v2/${apiPath}`,
+    const cookies = response.headers["set-cookie"];
+    const cookieHeader = cookies
+      ? cookies.map((c) => c.split(";")[0]).join("; ")
+      : "";
+
+    const ajaxParams = new URLSearchParams();
+    ajaxParams.append("action", "doo_player_ajax");
+    ajaxParams.append("post", postId);
+    ajaxParams.append("nume", "1");
+    ajaxParams.append("type", "tv");
+
+    const ajaxResponse = await this.client.post(
+      `${this.baseUrl}/wp-admin/admin-ajax.php`,
+      ajaxParams.toString(),
+      {
+        headers: {
+          ...this.headers,
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          "X-Requested-With": "XMLHttpRequest",
+          "referer": url,
+          Cookie: cookieHeader,
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "same-origin",
+        },
+      },
     );
-    const embedUrl = apiResponse.data?.embed_url;
 
-    if (!embedUrl) {
-      throw new Error("Embed URL not found in API response");
-    }
+    const embedUrl = ajaxResponse.data?.embed_url;
+    if (!embedUrl) throw new Error("Embed URL not found");
 
-    const embedResponse = await this.client.get(embedUrl);
-    const $embed = cheerio.load(embedResponse.data);
-    return parseVideoSource($embed);
+    const embedResponse = await this.client.get(embedUrl, {
+      headers: { ...this.headers, "referer": url },
+    });
+    const playerPath = extractIframeSrc(embedResponse.data);
+    if (!playerPath) throw new Error("Player iframe not found");
+
+    const playerUrl = playerPath.startsWith("http")
+      ? playerPath
+      : `${this.baseUrl}${playerPath}`;
+
+    const playerResponse = await this.client.get(playerUrl, {
+      headers: { ...this.headers, "referer": embedUrl },
+    });
+    const servers = extractListServer(playerResponse.data);
+    const server2 =
+      servers.find((s: any) => s.name?.includes("2")) || servers[0];
+    if (!server2) throw new Error("No video server found");
+
+    const sourceResponse = await this.client.get(server2.src, {
+      headers: { ...this.headers, "referer": playerUrl },
+    });
+    const finalSource = extractSources(sourceResponse.data);
+    if (!finalSource) throw new Error("Final video source not found");
+
+    return finalSource;
   }
 }
 
 // Export a default instance for easy loading
-export default new AnimeRukaExtension();
+export default new AnimeWakuExtension();

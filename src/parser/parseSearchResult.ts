@@ -8,13 +8,19 @@ export async function parseSearchResult(
 ): Promise<IPage<IAnimeItem>> {
   const items: IAnimeItem[] = [];
 
-  $(".search-page .result-item article").each((i, el) => {
-    const cover =
-      $(el).find(".image .thumbnail.animation-2 a img").attr("src")?.trim() ??
+  $(".result-item").each((i, el) => {
+    const img = $(el).find(".image img");
+    let cover =
+      img.attr("data-lazy-src")?.trim() ||
+      img.attr("data-src")?.trim() ||
+      img.attr("src")?.trim() ||
       "";
-    const url = $(el).find("a").attr("href")?.trim() ?? "";
-    const title =
-      $(el).find(".image .thumbnail.animation-2 a img").attr("alt") ?? "";
+
+    if (cover.startsWith("//")) {
+      cover = `https:${cover}`;
+    }
+    const url = $(el).find(".title a").attr("href") ?? "";
+    const title = $(el).find(".title a").text().trim() ?? "";
     items.push({
       url,
       title,
@@ -22,10 +28,13 @@ export async function parseSearchResult(
     });
   });
 
+  const lastPage =
+    parseInt($(".pagination .nav-links a.page-numbers").last().text()) || page;
+
   return {
     content: items,
     page: page,
     minPage: 1,
-    maxPage: 5,
+    maxPage: lastPage,
   };
 }

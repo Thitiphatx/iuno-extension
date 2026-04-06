@@ -8,7 +8,7 @@ async function runTest() {
         const latest = await extension.getLatest(1);
         console.log("Result:", JSON.stringify(latest, null, 2));
 
-        const firstItem = latest.content[0];
+        const firstItem = latest.content[6];
         if (firstItem) {
             const firstItemUrl = firstItem.url;
 

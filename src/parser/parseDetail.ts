@@ -1,10 +1,19 @@
 import type * as cheerio from "cheerio";
 import type { IAnimeDetail, ITag } from "../core/types/anime";
 
-export async function parseDetail($: cheerio.CheerioAPI): Promise<IAnimeDetail> {
-  const cover =
-    $("#single > div.content > div.sheader > div.poster > img").attr("src") ??
+export async function parseDetail(
+  $: cheerio.CheerioAPI,
+): Promise<IAnimeDetail> {
+  const img = $("#single > div.content > div.sheader > div.poster > img");
+  let cover =
+    img.attr("data-lazy-src")?.trim() ||
+    img.attr("data-src")?.trim() ||
+    img.attr("src")?.trim() ||
     "";
+
+  if (cover.startsWith("//")) {
+    cover = `https:${cover}`;
+  }
   const title =
     $("#single > div.content > div.sheader > div.data > h1").text().trim() ??
     "";

@@ -7,10 +7,21 @@ export async function parseLatest(
   page: number = 1,
 ): Promise<IPage<IAnimeItem>> {
   const items: IAnimeItem[] = [];
-  $(".items.normal article").each((i, el) => {
-    const cover = $(el).find("img.img-thumbnail").attr("src")?.trim() ?? "";
+
+  $("article").each((i, el) => {
+    const img = $(el).find("img");
+    let cover =
+      img.attr("data-lazy-src")?.trim() ||
+      img.attr("data-src")?.trim() ||
+      img.attr("src")?.trim() ||
+      "";
+
+    if (cover.startsWith("//")) {
+      cover = `https:${cover}`;
+    }
+
     const url = $(el).find("a").attr("href")?.trim() ?? "";
-    const title = $(el).find("a > h3").text() ?? "";
+    const title = $(el).find(".movie-title").text().trim() ?? "";
     items.push({
       url,
       title,
