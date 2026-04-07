@@ -22,6 +22,7 @@ export interface IGroupEpisode {
 
 export interface IEpisode {
   url: string;
+  preview?: string;
   number?: number;
   name?: string;
 }
