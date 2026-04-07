@@ -15,6 +15,7 @@ import {
   extractListServer,
   extractSources,
 } from "./parser/parseVideoSource";
+import { cleanImageUrlSize } from "./utilts";
 
 export class AnimeWakuExtension implements IExtension {
   id = "animewaku";
@@ -86,7 +87,7 @@ export class AnimeWakuExtension implements IExtension {
           items.push({
             title: item.title,
             url: item.url,
-            cover: item.img || "",
+            cover: cleanImageUrlSize(item.img) || "",
           });
         }
       });
@@ -96,7 +97,7 @@ export class AnimeWakuExtension implements IExtension {
       content: items,
       page: page,
       minPage: 1,
-      maxPage: 1, // API usually returns all results at once
+      maxPage: 1,
     };
   }
 
