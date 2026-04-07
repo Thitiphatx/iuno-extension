@@ -4,10 +4,10 @@ import type { IEpisode, IGroupEpisode } from "../core/types/anime";
 export async function parseEpisodes($: cheerio.CheerioAPI): Promise<IGroupEpisode[]> {
   const groups: IGroupEpisode[] = [];
 
-  $("#seasons .se-c").each((i, el) => {
+  $("#seasons > div.se-c").each((i, el) => {
     const episodes: IEpisode[] = [];
-    const title = $(el).find(".se-t.se-o").text().trim() ?? "";
-
+    const title = $(el).find("span.title").text().trim() ?? "";
+    
     $(el)
       .find(".se-a ul.episodios li")
       .each((indexEp, elementEp) => {
@@ -20,7 +20,6 @@ export async function parseEpisodes($: cheerio.CheerioAPI): Promise<IGroupEpisod
           number: Number(epNum),
         });
       });
-
     groups.push({
       title,
       episodes,
