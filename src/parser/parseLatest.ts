@@ -1,6 +1,7 @@
 import type * as cheerio from "cheerio";
 import type { IPage } from "../core/types";
 import type { IAnimeItem } from "../core/types/anime";
+import { cleanImageUrlSize } from "../utilts";
 
 export async function parseLatest(
   $: cheerio.CheerioAPI,
@@ -17,7 +18,7 @@ export async function parseLatest(
       "";
 
     if (cover.startsWith("//")) {
-      cover = `https:${cover.replace(/-\d+x\d+(?=\.(jpg|jpeg|png|webp)$)/i, '')}`;
+      cover = `https:${cover}`;
     }
 
     const url = $(el).find("a").attr("href")?.trim() ?? "";
@@ -25,7 +26,7 @@ export async function parseLatest(
     items.push({
       url,
       title,
-      cover,
+      cover: cleanImageUrlSize(cover),
     });
   });
   return {

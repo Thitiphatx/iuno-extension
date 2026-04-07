@@ -1,6 +1,7 @@
 import type * as cheerio from "cheerio";
 import type { IPage } from "../core/types";
 import type { IAnimeItem } from "../core/types/anime";
+import { cleanImageUrlSize } from "../utilts";
 
 export async function parseSearchResult(
   $: cheerio.CheerioAPI,
@@ -17,14 +18,14 @@ export async function parseSearchResult(
       "";
 
     if (cover.startsWith("//")) {
-      cover = `https:${cover.replace(/-\d+x\d+(?=\.(jpg|jpeg|png|webp)$)/i, '')}`;
+      cover = `https:${cover}`;
     }
     const url = $(el).find(".title a").attr("href") ?? "";
     const title = $(el).find(".title a").text().trim() ?? "";
     items.push({
       url,
       title,
-      cover,
+      cover: cleanImageUrlSize(cover),
     });
   });
 

@@ -1,5 +1,6 @@
 import type * as cheerio from "cheerio";
 import type { IAnimeDetail, ITag } from "../core/types/anime";
+import { cleanImageUrlSize } from "../utilts";
 
 export async function parseDetail(
   $: cheerio.CheerioAPI,
@@ -12,7 +13,7 @@ export async function parseDetail(
     "";
 
   if (cover.startsWith("//")) {
-    cover = `https:${cover.replace(/-\d+x\d+(?=\.(jpg|jpeg|png|webp)$)/i, "")}`;
+    cover = `https:${cover}`;
   }
   const title =
     $("#single > div.content > div.sheader > div.data > h1").text().trim() ??
@@ -35,7 +36,7 @@ export async function parseDetail(
   return {
     title,
     description,
-    cover,
+    cover: cleanImageUrlSize(cover),
     tags,
   };
 }
