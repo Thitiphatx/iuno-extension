@@ -25,10 +25,10 @@ export class AnimeWakuExtension implements IExtension {
   baseUrl = "https://www.animewaku.com";
   referer = "https://private-okru.doodee-player.com";
   headers = {
-    "user-agent":
+    "Ext-user-agent":
       "Mozilla/5.0 (Linux; Android 15; SM-S931B Build/AP3A.240905.015.A2; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/127.0.6533.103 Mobile Safari/537.36",
-    "referer": this.baseUrl,
-    "origin": this.baseUrl,
+    "Ext-referer": this.baseUrl,
+    "Ext-origin": this.baseUrl,
     Accept:
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
     "Accept-Language": "en-US,en;q=0.9,th;q=0.8",
@@ -136,7 +136,7 @@ export class AnimeWakuExtension implements IExtension {
           ...this.headers,
           "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
           "X-Requested-With": "XMLHttpRequest",
-          "referer": url,
+          "Ext-referer": url,
           Cookie: cookieHeader,
           "Sec-Fetch-Dest": "empty",
           "Sec-Fetch-Mode": "cors",
@@ -149,7 +149,7 @@ export class AnimeWakuExtension implements IExtension {
     if (!embedUrl) throw new Error("Embed URL not found");
 
     const embedResponse = await this.client.get(embedUrl, {
-      headers: { ...this.headers, "referer": url },
+      headers: { ...this.headers, "Ext-referer": url },
     });
     const playerPath = extractIframeSrc(embedResponse.data);
     if (!playerPath) throw new Error("Player iframe not found");
@@ -159,7 +159,7 @@ export class AnimeWakuExtension implements IExtension {
       : `${this.baseUrl}${playerPath}`;
 
     const playerResponse = await this.client.get(playerUrl, {
-      headers: { ...this.headers, "referer": embedUrl },
+      headers: { ...this.headers, "Ext-referer": embedUrl },
     });
     const servers = extractListServer(playerResponse.data);
     const server2 =
@@ -167,7 +167,7 @@ export class AnimeWakuExtension implements IExtension {
     if (!server2) throw new Error("No video server found");
 
     const sourceResponse = await this.client.get(server2.src, {
-      headers: { ...this.headers, "referer": playerUrl },
+      headers: { ...this.headers, "Ext-referer": playerUrl },
     });
     const finalSource = extractSources(sourceResponse.data);
     if (!finalSource) throw new Error("Final video source not found");
