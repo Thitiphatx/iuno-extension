@@ -1,6 +1,7 @@
 import type * as cheerio from "cheerio";
 import type { IPage } from "../core/types";
 import type { IAnimeItem } from "../core/types/anime";
+import { cleanImageUrlSize } from "../utils";
 
 export async function parseSearchResult(
   $: cheerio.CheerioAPI,
@@ -10,7 +11,7 @@ export async function parseSearchResult(
 
   $(".search-page .result-item article").each((i, el) => {
     const cover =
-      $(el).find(".image .thumbnail.animation-2 a img").attr("src")?.replace(/-\d+x\d+(?=\.(jpg|jpeg|png|webp)$)/i, '').trim() ??
+      $(el).find(".image .thumbnail.animation-2 a img").attr("src")?.trim() ??
       "";
     const url = $(el).find("a").attr("href")?.trim() ?? "";
     const title =
@@ -18,7 +19,7 @@ export async function parseSearchResult(
     items.push({
       url,
       title,
-      cover,
+      cover: cleanImageUrlSize(cover),
     });
   });
 
