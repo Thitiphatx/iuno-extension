@@ -18,7 +18,7 @@ export async function parseEpisodes(
           $(elementEp).find(".numerando").text().split("-").at(-1)?.trim() ??
           undefined;
         const url = $(elementEp).find(".episodiotitle a").attr("href") ?? "";
-        const img = $(".imagen img");
+        const img = $(elementEp).find(".imagen img");
         let preview =
           img.attr("data-lazy-src")?.trim() ||
           img.attr("data-src")?.trim() ||
@@ -28,7 +28,11 @@ export async function parseEpisodes(
         if (preview.startsWith("//")) {
           preview = `https:${preview}`;
         }
-
+        console.log(
+          !preview || preview.includes("dt_backdrop")
+            ? undefined
+            : cleanImageUrlSize(preview),
+        );
         episodes.push({
           url,
           number: Number(epNum),

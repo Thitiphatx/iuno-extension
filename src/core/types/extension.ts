@@ -8,6 +8,8 @@ export interface IExtension {
     baseUrl: string
     referer?: string
     headers?: Record<string, string>
+    sessionCookie?: string
+    setSession?(cookies: string, userAgent?: string): void
     getLatest(page?: number): Promise<IPage<IAnimeItem>>
     getSearchResult(keyword: string, page?: number): Promise<IPage<IAnimeItem>>
     getDetail(url: string): Promise<IAnimeDetail>

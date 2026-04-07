@@ -26,7 +26,7 @@ export class AnimeWakuExtension implements IExtension {
   referer = "https://private-okru.doodee-player.com";
   headers = {
     "user-agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 15; SM-S931B Build/AP3A.240905.015.A2; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/127.0.6533.103 Mobile Safari/537.36",
     "referer": this.baseUrl,
     "origin": this.baseUrl,
     Accept:
