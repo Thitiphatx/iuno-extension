@@ -3,7 +3,7 @@ import type { IAnimeDetail, ITag } from "../core/types/anime";
 
 export async function parseDetail($: cheerio.CheerioAPI): Promise<IAnimeDetail> {
   const cover =
-    $("#single > div.content > div.sheader > div.poster > img").attr("src") ??
+    $("#single > div.content > div.sheader > div.poster > img").attr("src")?.replace(/-\d+x\d+(?=\.(jpg|jpeg|png|webp)$)/i, '').trim() ??
     "";
   const title =
     $("#single > div.content > div.sheader > div.data > h1").text().trim() ??

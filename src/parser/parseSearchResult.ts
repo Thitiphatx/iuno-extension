@@ -10,7 +10,7 @@ export async function parseSearchResult(
 
   $(".search-page .result-item article").each((i, el) => {
     const cover =
-      $(el).find(".image .thumbnail.animation-2 a img").attr("src")?.trim() ??
+      $(el).find(".image .thumbnail.animation-2 a img").attr("src")?.replace(/-\d+x\d+(?=\.(jpg|jpeg|png|webp)$)/i, '').trim() ??
       "";
     const url = $(el).find("a").attr("href")?.trim() ?? "";
     const title =
