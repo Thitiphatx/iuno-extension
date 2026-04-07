@@ -17,7 +17,7 @@ export async function parseSearchResult(
       "";
 
     if (cover.startsWith("//")) {
-      cover = `https:${cover}`;
+      cover = `https:${cover.replace(/-\d+x\d+(?=\.(jpg|jpeg|png|webp)$)/i, '')}`;
     }
     const url = $(el).find(".title a").attr("href") ?? "";
     const title = $(el).find(".title a").text().trim() ?? "";

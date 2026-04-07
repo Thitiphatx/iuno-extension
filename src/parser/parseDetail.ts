@@ -12,7 +12,7 @@ export async function parseDetail(
     "";
 
   if (cover.startsWith("//")) {
-    cover = `https:${cover}`;
+    cover = `https:${cover.replace(/-\d+x\d+(?=\.(jpg|jpeg|png|webp)$)/i, "")}`;
   }
   const title =
     $("#single > div.content > div.sheader > div.data > h1").text().trim() ??

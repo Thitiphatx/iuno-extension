@@ -17,7 +17,7 @@ export async function parseLatest(
       "";
 
     if (cover.startsWith("//")) {
-      cover = `https:${cover}`;
+      cover = `https:${cover.replace(/-\d+x\d+(?=\.(jpg|jpeg|png|webp)$)/i, '')}`;
     }
 
     const url = $(el).find("a").attr("href")?.trim() ?? "";
