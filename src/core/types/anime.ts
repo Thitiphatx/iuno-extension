@@ -24,4 +24,5 @@ export interface IEpisode {
   url: string;
   number?: number;
   name?: string;
+  preview?: string;
 }

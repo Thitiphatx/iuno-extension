@@ -1,5 +1,6 @@
 import type * as cheerio from "cheerio";
 import type { IEpisode, IGroupEpisode } from "../core/types/anime";
+import { cleanImageUrlSize } from "../utilts";
 
 export async function parseEpisodes(
   $: cheerio.CheerioAPI,
@@ -17,9 +18,24 @@ export async function parseEpisodes(
           $(elementEp).find(".numerando").text().split("-").at(-1)?.trim() ??
           undefined;
         const url = $(elementEp).find(".episodiotitle a").attr("href") ?? "";
+        const img = $(".imagen img");
+        let preview =
+          img.attr("data-lazy-src")?.trim() ||
+          img.attr("data-src")?.trim() ||
+          img.attr("src")?.trim() ||
+          "";
+
+        if (preview.startsWith("//")) {
+          preview = `https:${preview}`;
+        }
+
         episodes.push({
           url,
           number: Number(epNum),
+          preview:
+            !preview || preview == ""
+              ? undefined
+              : cleanImageUrlSize(preview),
         });
       });
 
