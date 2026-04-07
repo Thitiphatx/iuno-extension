@@ -33,7 +33,7 @@ export async function parseEpisodes(
           url,
           number: Number(epNum),
           preview:
-            !preview || preview == "dt_backdrop.png"
+            !preview || preview.includes("dt_backdrop")
               ? undefined
               : cleanImageUrlSize(preview),
         });
