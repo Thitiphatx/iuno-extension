@@ -1,3 +1,5 @@
+import type { ITag } from ".";
+
 export interface IAnimeItem {
   url: string;
   title: string;
@@ -8,11 +10,6 @@ export interface IAnimeDetail extends Omit<IAnimeItem, "url"> {
   alias?: string;
   description?: string;
   tags: ITag[];
-}
-
-export interface ITag {
-  label: string;
-  url?: string;
 }
 
 export interface IGroupEpisode {
