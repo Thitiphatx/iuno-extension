@@ -16,6 +16,8 @@ export class NekopostExtension implements IMangaExtension {
   apiUrl = "https://api.osemocphoto.com/frontAPI";
   referer = "https://www.nekopost.net";
   headers = {
+    "Ext-User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
     "Ext-Referer": this.baseUrl,
     "Ext-Origin": this.baseUrl,
   };
@@ -29,7 +31,7 @@ export class NekopostExtension implements IMangaExtension {
 
   async getLatest(page: number = 1): Promise<IPage<IMangaItem>> {
     const response = await this.client.get(
-      `${this.apiUrl}}/getLatestChapterF3/m/0/12/${page}`,
+      `${this.apiUrl}/getLatestChapterF3/m/0/12/${page}`,
     );
 
     let data
