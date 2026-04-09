@@ -16,8 +16,8 @@ export class NekopostExtension implements IMangaExtension {
   apiUrl = "https://api.osemocphoto.com/frontAPI";
   referer = "https://www.nekopost.net";
   headers = {
-    "Referer": this.baseUrl,
-    "Origin": this.baseUrl,
+    "Ext-Referer": this.baseUrl,
+    "Ext-Origin": this.baseUrl,
   };
 
   private get client(): AxiosInstance {
