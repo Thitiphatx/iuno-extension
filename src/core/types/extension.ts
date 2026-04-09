@@ -23,5 +23,5 @@ export interface IMangaExtension extends IBaseExtension {
     getSearchResult(keyword: string, page?: number): Promise<IPage<IMangaItem>>
     getDetail(url: string): Promise<IMangaDetail>
     getChapters(url: string): Promise<IChapter[]>
-    getChapterPages(url: string): Promise<string[]>
+    getChapterPages(mangaId: string, chapterId: string): Promise<string[]>
 }
