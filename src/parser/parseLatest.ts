@@ -1,23 +1,23 @@
-import type * as cheerio from "cheerio";
-import type { IPage } from "../core/types";
-import type { IAnimeItem } from "../core/types/anime";
-import { cleanImageUrlSize } from "../utils";
+import type { IPage } from "../core/types"
+import type { IAnimeItem } from "../core/types/anime"
+import extension from "../index"
+import type { IVideoResponse } from "../core/types/videoResponse"
 
 export async function parseLatest(
-  $: cheerio.CheerioAPI,
-  page: number = 1,
+  animeItems: IVideoResponse[],
+  page: number = 0,
 ): Promise<IPage<IAnimeItem>> {
-  const items: IAnimeItem[] = [];
-  $(".items.normal article").each((i, el) => {
-    const cover = $(el).find("img.img-thumbnail").attr("src")?.trim() ?? "";
-    const url = $(el).find("a").attr("href")?.trim() ?? "";
-    const title = $(el).find("a > h3").text() ?? "";
-    items.push({
-      url,
-      title,
-      cover: cleanImageUrlSize(cover),
-    });
-  });
+  const items: IAnimeItem[] = animeItems.map((item: IVideoResponse) => {
+    const url = `${extension.baseUrl}/video/${item.id}/${item.slug}`
+    const cover = item.customThumbnail
+      ? `${extension.thumbnailUrl}/image/thumbnail/${item.customThumbnail.id}/${item.customThumbnail.name}`
+      : `${extension.thumbnailUrl}/image/thumbnail/${item.file.id}/thumbnail-${item.thumbnail < 10 ? `0${item.thumbnail}` : item.thumbnail}.jpg`;
+    return {
+      url: url,
+      title: item.title,
+      cover: cover
+    }
+  })
   return {
     content: items,
     page: page,

@@ -14,16 +14,16 @@ import { parseEpisodes } from "./parser/parseEpisodes";
 import { parseApiUrl, parseVideoSource } from "./parser/parseVideoSource";
 
 export class AnimeRukaExtension implements IExtension {
-  id = "animeruka";
-  name = "Animeruka";
-  icon = "https://animeruka.com/wp-content/uploads/2024/07/cropped-32bc1bc65f31e82e2f89eb399f4c93e8-1-192x192.png";
-  baseUrl = "https://animeruka.com";
-  referer = "https://animemami.xyz"
+  id = "iwara"
+  name = "Iwara"
+  icon = "https://animeruka.com/wp-content/uploads/2024/07/cropped-32bc1bc65f31e82e2f89eb399f4c93e8-1-192x192.png"
+  baseUrl = "https://www.iwara.tv"
+  thumbnailUrl = "https://i.iwara.tv"
+  apiUrl = "https://api.iwara.tv"
+  referer = "https://www.iwara.tv"
   headers = {
-    "Ext-User-Agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    "Ext-Referer": this.baseUrl,
-    "Ext-Origin": this.baseUrl,
+    "User-Agent":
+      "PostmanRuntime/7.51.1",
   };
 
   private get client(): AxiosInstance {
@@ -33,12 +33,12 @@ export class AnimeRukaExtension implements IExtension {
     });
   }
 
-  async getLatest(page: number = 1): Promise<IPage<IAnimeItem>> {
+  async getLatest(page: number = 0): Promise<IPage<IAnimeItem>> {
     const response = await this.client.get(
-      `${this.baseUrl}/anime/page/${page}`,
-    );
-    const $ = cheerio.load(response.data);
-    return await parseLatest($, page);
+      `${this.apiUrl}/videos?rating=all&sort=date&page=${page}`,
+      { headers: this.headers }
+    )
+    return await parseLatest(response.data.results, page);
   }
 
   async getSearchResult(
