@@ -16,10 +16,10 @@ export class NekopostExtension implements IMangaExtension {
   apiUrl = "https://api.osemocphoto.com/frontAPI";
   referer = "https://www.nekopost.net";
   headers = {
-    "Ext-User-Agent":
+    "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    "Ext-Referer": this.baseUrl,
-    "Ext-Origin": this.baseUrl,
+    "Referer": this.baseUrl,
+    "Origin": this.baseUrl,
   };
 
   private get client(): AxiosInstance {
@@ -33,15 +33,7 @@ export class NekopostExtension implements IMangaExtension {
     const response = await this.client.get(
       `${this.apiUrl}/getLatestChapterF3/m/0/12/${page}`,
     );
-
-    let data
-    try {
-      data = JSON.parse(response.data)
-    } catch (e) {
-      throw new Error(`${e}`)
-    }
-
-    return parseList(page, data.listChapter as INekopostMangaItem[]);
+    return parseList(page, response.data.listChapter as INekopostMangaItem[]);
   }
 
   async getSearchResult(
@@ -55,53 +47,25 @@ export class NekopostExtension implements IMangaExtension {
       })
     );
 
-    let data
-    try {
-      data = JSON.parse(response.data)
-    } catch (e) {
-      throw new Error(`${e}`)
-    }
-
-    return parseList(page, data.listChapter as INekopostMangaItem[])
+    return parseList(page, response.data.listChapter as INekopostMangaItem[])
   }
 
   async getDetail(mangaId: string): Promise<IMangaDetail> {
     const response = await this.client.get(`${this.apiUrl}/getProjectInfo/${mangaId}`);
 
-    let data
-    try {
-      data = JSON.parse(response.data)
-    } catch (e) {
-      throw new Error(`${e}`)
-    }
-
-    return parseDetail(data);
+    return parseDetail(response.data);
   }
 
   async getChapters(mangaId: string): Promise<IChapter[]> {
     const response = await this.client.get(`${this.apiUrl}/getProjectInfo/${mangaId}`);
 
-    let data
-    try {
-      data = JSON.parse(response.data)
-    } catch (e) {
-      throw new Error(`${e}`)
-    }
-
-    return parseChapters(data);
+    return parseChapters(response.data);
   }
 
   async getChapterPages(mangaId: string, chapterId: string): Promise<string[]> {
     const response = await this.client.get(`https://www.osemocphoto.com/collectManga/${mangaId}/${chapterId}/${mangaId}_${chapterId}.json`);
 
-    let data: INekopostChapterPages
-    try {
-      data = JSON.parse(response.data)
-    } catch (e) {
-      throw new Error(`${e}`)
-    }
-
-    return parseChapterPages(data, mangaId, chapterId);
+    return parseChapterPages(response.data, mangaId, chapterId);
   }
 }
 
