@@ -2,13 +2,15 @@ import type { IPage } from "."
 import type { IAnimeDetail, IAnimeItem, IGroupEpisode } from "./anime"
 import type { IChapter, IMangaDetail, IMangaItem } from "./manga"
 
+export type ExtensionType = "anime" | "manga"
+
 export interface IBaseExtension {
     id: string
     name: string
     icon: string
     baseUrl: string
     headers?: Record<string, string>
-    type: "anime" | "manga"
+    type: ExtensionType
 }
 
 export interface IAnimeExtension extends IBaseExtension {
