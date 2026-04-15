@@ -17,7 +17,7 @@ export async function parseList(page: number, mangas: INekopostMangaItem[]): Pro
             url: id,
             cover: image,
             title: manga.projectName,
-            latestChapter: Number(manga.chapterNo) ?? undefined
+            latestChapter: manga.chapterNo ? Number(manga.chapterNo) : undefined
         })
     }
 

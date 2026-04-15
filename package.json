@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=esm --minify --sourcemap --platform=browser",
-    "dev": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=esm --sourcemap --platform=browser --watch",
+    "dev": "esbuild src/test.ts --bundle --outfile=dist/test.js --format=esm --sourcemap --platform=browser --watch",
     "test": "bun test/run.ts"
   },
   "devDependencies": {

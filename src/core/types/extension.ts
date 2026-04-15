@@ -8,6 +8,7 @@ export interface IBaseExtension {
     icon: string
     baseUrl: string
     headers?: Record<string, string>
+    type: "anime" | "manga"
 }
 
 export interface IAnimeExtension extends IBaseExtension {

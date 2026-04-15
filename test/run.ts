@@ -34,10 +34,10 @@ async function runTest(extension: IMangaExtension | IAnimeExtension) {
         // --- TYPE-SPECIFIC TESTS ---
         if (isManga) {
             console.log(">> Detected Type: MANGA");
-            
+
             const chapters = await extension.getChapters(firstItem.url);
             console.log(`Found ${chapters.length} chapters.`);
-            
+
             if (chapters[0]) {
                 const pages = await extension.getChapterPages(firstItem.url, chapters[0].url);
                 console.log(`Found ${pages.length} pages in first chapter.`);
@@ -45,10 +45,10 @@ async function runTest(extension: IMangaExtension | IAnimeExtension) {
 
         } else if (isAnime) {
             console.log(">> Detected Type: ANIME");
-            
+
             const groups = await extension.getEpisodes(firstItem.url);
             console.log(`Found ${groups.length} episode groups.`);
-            
+
             const firstEp = groups[0]?.episodes[0];
             if (firstEp) {
                 const source = await extension.getVideoSource(firstEp.url);
@@ -60,5 +60,4 @@ async function runTest(extension: IMangaExtension | IAnimeExtension) {
         console.error("Test failed:", err.message);
     }
 }
-
 runTest(extension)
