@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=cjs --minify --sourcemap --platform=browser --target=esnext",
+    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=cjs --minify --sourcemap --platform=browser --target=es2019",
     "dev": "esbuild src/test.ts --bundle --outfile=dist/test.js --format=esm --sourcemap --platform=browser --watch",
     "test": "bun test/run.ts"
   },
@@ -22,4 +22,3 @@
     "esbuild": "^0.28.0"
   }
 }
-
