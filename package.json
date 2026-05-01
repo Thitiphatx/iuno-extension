@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=cjs --minify --sourcemap --platform=browser",
+    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=cjs --minify --sourcemap --platform=browser --target=esnext",
     "dev": "esbuild src/test.ts --bundle --outfile=dist/test.js --format=esm --sourcemap --platform=browser --watch",
     "test": "bun test/run.ts"
   },
@@ -15,10 +15,11 @@
     "typescript": "^6.0.2"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "@types/cheerio": "^1.0.0",
     "@types/node": "^25.5.2",
-    "axios": "^1.14.0",
     "cheerio": "^1.2.0",
     "esbuild": "^0.28.0"
   }
 }
+
